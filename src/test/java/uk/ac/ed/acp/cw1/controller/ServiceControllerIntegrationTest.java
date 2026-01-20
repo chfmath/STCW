@@ -133,4 +133,28 @@ public class ServiceControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("false"));
     }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request for invalid JSON")
+    public void shouldReturn400ForInvalidJson() throws Exception {
+        // "lat" should be a number, not a string "invalid"
+        String invalidJson = "{ \"position1\": { \"lat\": \"invalid\", \"lng\": 0.0 }, \"position2\": { \"lat\": 0.0, \"lng\": 0.0 } }";
+
+        mockMvc.perform(post("/api/v1/distanceTo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Should return 400 Bad Request for missing required fields")
+    public void shouldReturn400ForMissingFields() throws Exception {
+        // Missing "position2"
+        String missingFieldJson = "{ \"position1\": { \"lat\": 0.0, \"lng\": 0.0 } }";
+
+        mockMvc.perform(post("/api/v1/distanceTo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(missingFieldJson))
+                .andExpect(status().isBadRequest());
+    }
 }

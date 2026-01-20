@@ -21,8 +21,8 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    - name: Build and Test with Maven
+      run: mvn -B clean test --file pom.xml
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2

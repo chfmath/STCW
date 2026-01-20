@@ -9,6 +9,9 @@ import java.net.URL;
 
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.ed.acp.cw1.dto.*;
 import uk.ac.ed.acp.cw1.service.LocationService;
 
@@ -20,6 +23,8 @@ import uk.ac.ed.acp.cw1.service.LocationService;
 @RestController
 @RequestMapping("/api/v1")
 public class ServiceController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceController.class);
 
     @Value("${ilp.service.url}")
     public URL serviceUrl;
@@ -73,6 +78,8 @@ public class ServiceController {
 
     @PostMapping("/isInRegion")
     public ResponseEntity<Boolean> isInRegion(@Valid @RequestBody RegionRequest request) {
+        logger.info("Checking region: {} for point: {}", 
+            request.getRegion().getName(), request.getPosition());
         boolean inside = locationService.isInRegion(request.getPosition(), request.getRegion().getVertices());
         return ResponseEntity.ok(inside);
     }

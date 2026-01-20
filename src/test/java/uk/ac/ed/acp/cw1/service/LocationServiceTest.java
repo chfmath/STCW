@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import uk.ac.ed.acp.cw1.dto.Position;
+import uk.ac.ed.acp.cw1.lib.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,12 +142,7 @@ class LocationServiceTest {
         @DisplayName("Should return true for point inside polygon")
         void shouldReturnTrueForPointInsidePolygon() {
             Position point = new Position(1.0, 1.0);
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             boolean result = locationService.isInRegion(point, vertices);
 
@@ -157,12 +153,7 @@ class LocationServiceTest {
         @DisplayName("Should return false for point outside polygon")
         void shouldReturnFalseForPointOutsidePolygon() {
             Position point = new Position(3.0, 3.0);
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             boolean result = locationService.isInRegion(point, vertices);
 
@@ -173,12 +164,7 @@ class LocationServiceTest {
         @DisplayName("Should handle polygon vertex on point correctly")
         void shouldHandlePolygonVertexOnPointCorrectly() {
             Position point = new Position(0.0, 0.0);
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             boolean result = locationService.isInRegion(point, vertices);
 
@@ -189,13 +175,7 @@ class LocationServiceTest {
         @DisplayName("Should consider point on horizontal edge as inside")
         void shouldConsiderPointOnHorizontalEdgeAsInside() {
             Position point = new Position(1.0, 0.0); // Point on bottom edge
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0),
-                new Position(0.0, 0.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             boolean result = locationService.isInRegion(point, vertices);
 
@@ -206,13 +186,7 @@ class LocationServiceTest {
         @DisplayName("Should consider point on vertical edge as inside")
         void shouldConsiderPointOnVerticalEdgeAsInside() {
             Position point = new Position(2.0, 1.0); // Point on right edge
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0),
-                new Position(0.0, 0.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             boolean result = locationService.isInRegion(point, vertices);
 
@@ -240,13 +214,7 @@ class LocationServiceTest {
         void shouldHandleNearlyOnBoundaryCorrectly() {
             double epsilon = 1e-10; // Very small value
             Position pointSlightlyInside = new Position(1.0, epsilon);
-            Position[] vertices = {
-                new Position(0.0, 0.0),
-                new Position(2.0, 0.0),
-                new Position(2.0, 2.0),
-                new Position(0.0, 2.0),
-                new Position(0.0, 0.0)
-            };
+            Position[] vertices = TestUtils.createSquareRegion("test", 2.0).getVertices();
 
             assertTrue(locationService.isInRegion(pointSlightlyInside, vertices),
                     "Point slightly inside should be considered inside");
