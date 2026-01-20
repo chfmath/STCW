@@ -9,22 +9,28 @@ The system MUST verify if a specific point lies strictly inside or on the bounda
 * **REQ-SYS-03 (Next Position Calculation):**
 Given a starting point and a valid angle, the system MUST calculate the correct coordinates of the next position via the `/apiv1/nextPosition` endpoint.
 * **REQ-SYS-04 (Closeness Check):**
-The system MUST return `true` via `/apiv1/isCloseTo` if two points are within a close distance threshold of 0.00015 degrees, and `false` otherwise.
+The system MUST treat two points as effectively identical if they are within a distance of 0.00015 degrees. The `/apiv1/isCloseTo` endpoint must return `true` for points within this threshold and `false` otherwise.
 
+## 2. Integration Requirements (Interface Level)
 
-## 2. Functional Requirements (Unit Level \& Robustness)
+* **REQ-INT-01 (HTTP Status Contracts):**
+The system MUST correctly map internal validation results to HTTP status codes. Valid requests must return `200 OK`, while requests with missing data, malformed JSON, or logically invalid data (e.g., open polygons) must return `400 Bad Request`.
+* **REQ-INT-02 (JSON Robustness/Mapping):**
+The Controller layer MUST correctly map JSON inputs to service objects, ensuring that valid payloads containing unexpected fields are accepted (ignoring the extra data) rather than rejected.
+* **REQ-INT-03 (Endpoint Routing):**
+All functional endpoints MUST be reachable strictly under the `/apiv1/` prefix, while the health check MUST be reachable at `/actuator/health` (without the prefix), verifying the routing configuration is correct.
+
+## 3. Functional Requirements (Unit Level)
 
 * **REQ-UNIT-01 (Polygon Closure Validation):**
-The system MUST validate that the list of vertices provided for a region forms a closed polygon (i.e., the first and last vertices must be identical). If the polygon is "open", the system must treat the data as invalid.
-* **REQ-UNIT-02 (JSON Parsing Robustness):**
-The system MUST accept valid JSON payloads that contain extraneous/unexpected fields. It must ignore these extra fields and process the valid data.
-* **REQ-UNIT-03 (Syntactic Validation):**
-The system MUST distinguish between semantically valid and invalid requests. If data is missing, malformed, or logically invalid (e.g. open polygon), the system must return an HTTP 400 (Bad Request) status code instead of a 500 Internal Server Error.
+The validation logic MUST ensure that the list of vertices provided for a region forms a closed polygon (the first and last vertices are identical).
+* **REQ-UNIT-02 (Threshold Logic):**
+The internal comparison logic MUST correctly classify points separated by less than or 0.00015 degrees as "close" to account for minor precision loss.
 
 
-## 3. Non-Functional Requirements (Quality Attributes)
+## 4. Non-Functional Requirements (Quality Attributes)
 
-* **REQ-NFR-01 (Interface Compliance):**
-The service MUST adhere to endpoint naming convention, including the `/apiv1/` prefix for all operational endpoints and the exact JSON structure for responses as provided in the specification.
-* **REQ-NFR-02 (Livliness/Health):**
-The system MUST provide a dedicated `/actuator/health` endpoint that returns a status of "UP" to confirm service availability.
+* **REQ-NFR-01 (Availability/Health):**
+The system MUST provide a dedicated `/actuator/health` endpoint that returns a status of "UP" to confirm service availability for container orchestration.
+* **REQ-NFR-02 (Performance/Latency):**
+The system MUST respond to valid geometric calculation requests within 500ms under normal operating conditions.
