@@ -12,7 +12,7 @@ High priority. This is a critical property ensuring drones do not fly into restr
 
 * **REQ-INT-02 (JSON Robustness) R2:**
 Medium priority. Essential for service resilience but not safety-critical as with REQ-SYS-02.
-    *   **Technique:** Fault injection (system level). We will send malformed JSON payloads to ensuring the system rejects them gracefully with an HTTP 400 status.
+    *   **Technique:** Negative testing (system level). We will send malformed JSON payloads to ensure the system rejects them gracefully with an HTTP 400 status.
     *   **Requirements:** Requires a running Spring context (`MockMvc`).
 
 ## 2. Scaffolding and Instrumentation
